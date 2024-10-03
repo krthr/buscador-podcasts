@@ -9,7 +9,7 @@
 
 import router from '@adonisjs/core/services/router'
 
-// const PodcastsController = () => import('#controllers/podcasts_controller')
+const PodcastsController = () => import('#controllers/podcasts_controller')
 
-router.on('/').render('pages/index')
-// router.get('/', [PodcastsController, 'index'])
+// router.on('/').render('pages/index')
+router.get('/', [PodcastsController, 'index'])

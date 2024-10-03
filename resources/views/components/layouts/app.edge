@@ -1,18 +1,22 @@
 <!DOCTYPE html>
-<html lang="es">
+<html lang="es" data-theme="cupcake">
 
-<head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Document</title>
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>
+      Document
+    </title>
 
-  @vite(['resources/js/app.js'])
-</head>
+    @vite(['resources/js/app.js'])
+  </head>
 
-<body>
-  <h1 class="text-3xl font-bold underline">
-    Hello world!
-  </h1>
-</body>
+  <body>
+    <div class="w-full h-screen">
+      <div class="mx-auto max-w-6xl p-2">
+        {{{ await $slots.main() }}}
+      </div>
+    </div>
+  </body>
 
 </html>
