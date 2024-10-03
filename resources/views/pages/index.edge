@@ -10,7 +10,13 @@
         <div class="mb-4 inline-flex items-center space-x-2">
           <div class="avatar">
             <div class="w-24 h-24 rounded-full">
-              <img src="{{ podcast.images.url }}" alt="" />
+              <img
+                class="lazy"
+                {{ html.attrs({
+                    src: podcast.images.preview,
+                    'data-src': podcast.images.url
+                  }) }}
+              />
             </div>
           </div>
           <div>
@@ -27,14 +33,20 @@
           @each(episode in podcast.episodes)
             <div class="card card-bordered card-compact">
               <figure>
-                <img src="{{ episode.images.url || podcast.images.url }}" alt="" />
+                <img
+                  class="lazy"
+                  {{ html.attrs({
+                      src: (episode.images.preview || podcast.images.preview),
+                      'data-src': (episode.images.url || podcast.images.url)
+                    }) }}
+                />
               </figure>
               <div class="card-body">
-                <h3 class="card-title line-clamp-3 text-base">
+                <h3 class="card-title line-clamp-2 text-sm md:line-clamp-3 md:text-base">
                   {{ episode.title }}
                 </h3>
 
-                <p class="line-clamp-4">
+                <p class="line-clamp-3 text-xs md:line-clamp-4 md:text-sm">
                   {{ episode.excerpt }}
                 </p>
               </div>

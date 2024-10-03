@@ -47,6 +47,7 @@
     "daisyui": "^4.12.11",
     "eslint": "^9.9.1",
     "hot-hook": "^0.3.0",
+    "iconify-icon": "^2.1.0",
     "pino-pretty": "^11.2.2",
     "postcss": "^8.4.47",
     "prettier": "^3.3.3",
