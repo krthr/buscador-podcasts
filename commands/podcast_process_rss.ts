@@ -1,5 +1,5 @@
 import type { CommandOptions } from '@adonisjs/core/types/ace'
-import { args, BaseCommand } from '@adonisjs/core/ace'
+import { BaseCommand, flags } from '@adonisjs/core/ace'
 import logger from '@adonisjs/core/services/logger'
 
 import AtomParserService from '#services/atom_parser_service'
@@ -13,18 +13,10 @@ export default class PodcastProcessRss extends BaseCommand {
     startApp: true,
   }
 
-  @args.string()
-  declare id: string
+  @flags.string({ required: false })
+  declare id?: string
 
-  async run() {
-    const podcast = await Podcast.query().where('id', this.id).orWhere('slug', this.id).first()
-
-    if (!podcast) {
-      throw new Error(`No podcast found with id/slug = ${this.id}`)
-    }
-
-    logger.info(podcast.serialize(), 'found podcast')
-
+  async processPodcast(podcast: Podcast) {
     const parsed = await AtomParserService.parse(podcast.atomLink)
     if (!parsed) {
       throw new Error('No parsed data.')
@@ -53,6 +45,24 @@ export default class PodcastProcessRss extends BaseCommand {
           publishedAt: item.pubDate,
         }
       )
+    }
+  }
+
+  async run() {
+    logger.info({ id: this.id }, 'using arguments')
+
+    let query = Podcast.query()
+
+    if (this.id) {
+      query = query.where('id', this.id).orWhere('slug', this.id)
+    }
+
+    const podcasts = await query
+
+    logger.info(`found ${podcasts.length} podcasts`)
+
+    for (const podcast of podcasts) {
+      await this.processPodcast(podcast)
     }
   }
 }

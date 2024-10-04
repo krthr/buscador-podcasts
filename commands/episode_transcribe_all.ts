@@ -1,10 +1,9 @@
 import type { CommandOptions } from '@adonisjs/core/types/ace'
-
 import { BaseCommand, flags } from '@adonisjs/core/ace'
+import { inject } from '@adonisjs/core'
 import logger from '@adonisjs/core/services/logger'
 
 import Episode from '#models/episode'
-import { inject } from '@adonisjs/core'
 import ReplicateService from '#services/replicate_service'
 
 export default class EpisodeTranscribeAll extends BaseCommand {
@@ -17,6 +16,9 @@ export default class EpisodeTranscribeAll extends BaseCommand {
 
   @flags.string({ required: false })
   declare id?: string
+
+  @flags.string({ required: false })
+  declare podcastId?: string
 
   @flags.number({ default: 1 })
   declare limit: number
@@ -73,6 +75,10 @@ export default class EpisodeTranscribeAll extends BaseCommand {
     if (this.id) {
       query = query.where('id', this.id).orWhere('guid', this.id)
       this.force = true
+    } else if (this.podcastId) {
+      query = query.where('podcast_id', this.podcastId).orWhereHas('podcast', (podcast) => {
+        podcast.where('slug', this.podcastId!)
+      })
     }
 
     if (!this.force) {
