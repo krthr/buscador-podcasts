@@ -9,6 +9,7 @@ export default class PodcastsController {
         .groupOrderBy('published_at', 'desc')
         .whereNotNull('structured_data')
         .withScopes((s) => s.simple())
+        .preload('podcast')
     })
 
     return view.render('pages/index', { podcasts })
@@ -28,6 +29,7 @@ export default class PodcastsController {
       .query()
       .withScopes((s) => s.simple())
       .withScopes((s) => s.public())
+      .preload('podcast')
       .paginate(page)
 
     // episodes.getNextPageUrl()

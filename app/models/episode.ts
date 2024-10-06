@@ -130,6 +130,9 @@ export default class Episode extends BaseModel {
     if (this.imageUrl) {
       url = buildImageUrl(this.imageUrl, { w: 400 })
       preview = buildImageUrl(this.imageUrl, { w: 1, blur: 20 })
+    } else if (this.podcast?.images) {
+      url = this.podcast?.images?.url
+      preview = this.podcast?.images?.preview
     }
 
     return { url, preview }

@@ -33,6 +33,9 @@ export default class Podcast extends BaseModel {
   @column()
   declare atomLink: string
 
+  @column()
+  declare embeddingTemplate: string | null
+
   @column.dateTime({ autoCreate: true })
   declare createdAt: DateTime
 
