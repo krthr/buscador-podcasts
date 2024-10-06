@@ -6,10 +6,8 @@
         <a href="{{ episode.url }}">
           <img
             class="lazy aspect-square w-full"
-            {{ html.attrs({
-                'src': (episode.images.preview),
-                'data-src': (episode.images.url)
-              }) }}
+            src="{{ episode.images.preview }}"
+            data-src="{{ episode.images.url }}"
           />
         </a>
       </figure>

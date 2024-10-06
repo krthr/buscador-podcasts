@@ -3,7 +3,11 @@
   <article class="prose mx-auto" id="content">
 
     <div class="text-center gap-2">
-      <img class="mx-auto rounded-xl" src="{{ episode.images.url }}" alt="" />
+      <img
+        class="mx-auto rounded-xl lazy aspect-square"
+        src="{{ episode.images.preview }}"
+        data-src="{{ episode.images.url }}"
+      />
 
       <div class="w-full">
         <h1 class="mb-4 font-bold">
@@ -14,7 +18,11 @@
         <div class="flex items-center mx-auto justify-center gap-x-2">
           <div class="avatar">
             <div class="w-12 rounded-full ">
-              <img class="my-0" src="{{ episode.podcast.images.url }}" />
+              <img
+                class="my-0 lazy aspect-square"
+                src="{{ episode.podcast.images.preview }}"
+                data-src="{{ episode.podcast.images.url }}"
+              />
             </div>
           </div>
 
