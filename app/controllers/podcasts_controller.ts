@@ -1,7 +1,6 @@
 import type { HttpContext } from '@adonisjs/core/http'
 
 import Podcast from '#models/podcast'
-import Episode from '#models/episode'
 
 export default class PodcastsController {
   async index({ view }: HttpContext) {

@@ -1,7 +1,6 @@
 import { Infer } from '@vinejs/vine/types'
 import env from '#start/env'
 import { inject } from '@adonisjs/core'
-import logger from '@adonisjs/core/services/logger'
 import vine from '@vinejs/vine'
 
 import Replicate from 'replicate'
