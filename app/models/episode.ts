@@ -4,12 +4,15 @@ import { DateTime } from 'luxon'
 import { BaseModel, beforeSave, belongsTo, column, computed, scope } from '@adonisjs/lucid/orm'
 import { init as initCuid } from '@paralleldrive/cuid2'
 import logger from '@adonisjs/core/services/logger'
+import * as marked from 'marked'
+import router from '@adonisjs/core/services/router'
 import stringHelpers from '@adonisjs/core/helpers/string'
 
 import Podcast from '#models/podcast'
 import { TranscriptionBody } from '#services/replicate_service'
 import { buildImageUrl } from '#utils/imagekit'
 import { srtFormatTimestamp } from '#utils/episodes'
+import { PodcastExtractedData, StructuredData } from '../../commands/episode_extract_data.js'
 
 const cuid = initCuid({ length: 5 })
 
@@ -53,8 +56,6 @@ export default class Episode extends BaseModel {
           logger.error({ error })
         }
       }
-
-      return null
     },
     prepare(value: TranscriptionBody['chunks'] | null) {
       if (value) {
@@ -69,6 +70,28 @@ export default class Episode extends BaseModel {
     },
   })
   declare transcriptionChunks: TranscriptionBody['chunks'] | null
+
+  @column({
+    consume(value: string | null) {
+      if (value) {
+        try {
+          return JSON.parse(value)
+        } catch (error) {
+          logger.error({ error })
+        }
+      }
+    },
+    prepare(value: StructuredData | null) {
+      console.log({ value })
+      const result = PodcastExtractedData.safeParse(value)
+      console.log({ result })
+
+      if (result.success) {
+        return JSON.stringify(result.data)
+      }
+    },
+  })
+  declare structuredData: StructuredData | null
 
   @column.dateTime()
   declare publishedAt: DateTime | null
@@ -112,13 +135,67 @@ export default class Episode extends BaseModel {
     return { url, preview }
   }
 
+  @computed()
+  get url() {
+    return router
+      .builder()
+      .params({ id: this.slug || this.id })
+      .make('episode')
+  }
+
+  @computed()
+  get structuredDataMarkdown() {
+    if (this.structuredData) {
+      const markdwn: string[] = []
+
+      markdwn.push(
+        `## Introducción`,
+        this.structuredData.introduccion,
+
+        '## Capítulos'
+      )
+
+      for (const chapter of this.structuredData.capitulos) {
+        markdwn.push(`### ${chapter.titulo_capitulo}`)
+        markdwn.push(chapter.contenido)
+      }
+
+      markdwn.push('## Conclusión', this.structuredData.conclusion)
+      markdwn.push('## Menciones', ...this.structuredData.menciones.map((m) => `- ${m}`))
+
+      return markdwn.join('\n')
+    }
+
+    return null
+  }
+
+  @computed()
+  get structuredDataMarkdownRendered() {
+    if (this.structuredDataMarkdown) {
+      try {
+        return marked.parse(this.structuredDataMarkdown)
+      } catch (error) {}
+    }
+
+    return ''
+  }
+
   ///
 
   @beforeSave()
-  static async slugify(episode: Episode) {
+  static slugify(episode: Episode) {
     if (episode.$dirty.title) {
       const slug = stringHelpers.slug(episode.title, { trim: true, lower: true }) + '-' + cuid()
       episode.slug = slug
+    }
+  }
+
+  @beforeSave()
+  static async generateTranscriptionText(episode: Episode) {
+    const transcriptionChunks = episode.transcriptionChunks
+
+    if (transcriptionChunks) {
+      episode.transcriptionText = transcriptionChunks.map((chunk) => chunk.text).join('')
     }
   }
 
@@ -136,5 +213,13 @@ export default class Episode extends BaseModel {
       'podcast_id',
       'published_at'
     )
+  })
+
+  static public = scope((query) => {
+    query.whereNotNull('structured_data').orderBy('published_at', 'desc')
+  })
+
+  static withId = scope((query, id: string) => {
+    query.where((q) => q.where('id', id).orWhere('guid', id).orWhere('slug', id))
   })
 }

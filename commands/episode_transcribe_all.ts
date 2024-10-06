@@ -35,7 +35,7 @@ export default class EpisodeTranscribeAll extends BaseCommand {
 
     try {
       if (episode.transcriptionChunks && episode.transcriptionText) {
-        logger.info(obj, 'episode already transcribed')
+        logger.warn(obj, 'episode already transcribed')
         return
       }
 
@@ -43,16 +43,15 @@ export default class EpisodeTranscribeAll extends BaseCommand {
         throw new Error('episode does not have mediaUrl')
       }
 
-      logger.info(obj, 'found episode')
-
-      const { chunks, text } = await replicateService.transcribeAudio(episode.mediaUrl)
+      logger.info(obj, 'transcribing episode')
+      const { chunks } = await replicateService.transcribeAudio(episode.mediaUrl)
 
       episode.transcriptionChunks = chunks
-      episode.transcriptionText = text
+      // episode.transcriptionText = text
 
       await episode.save()
 
-      logger.info(obj, 'done')
+      // logger.info(obj, 'done')
     } catch (error) {
       logger.error({ error, ...obj })
     }
@@ -66,26 +65,30 @@ export default class EpisodeTranscribeAll extends BaseCommand {
         id: this.id,
         force: this.force,
         concurrency: this.concurrency,
+        podcastId: this.podcastId,
       },
-      'using arguments'
+      'episode transcribe all using arguments'
     )
 
     let query = Episode.query()
 
     if (this.id) {
-      query = query.where('id', this.id).orWhere('guid', this.id)
-      this.force = true
+      query = query.where((q) => {
+        q.where('id', this.id!).orWhere('guid', this.id!)
+      })
     } else if (this.podcastId) {
-      query = query.where('podcast_id', this.podcastId).orWhereHas('podcast', (podcast) => {
-        podcast.where('slug', this.podcastId!)
+      query = query.where((q) => {
+        q.where('podcast_id', this.podcastId!)
       })
     }
 
     if (!this.force) {
-      query = query.whereNull('transcription_text').orWhereNull('transcription_chunks')
+      query = query.where((q) => {
+        q.whereNull('transcription_text').orWhereNull('transcription_chunks')
+      })
     }
 
-    const episodes = await query.limit(this.limit)
+    const episodes = await query.limit(this.limit).orderBy('published_at', 'desc')
 
     logger.info(`found ${episodes.length} episodes`)
 

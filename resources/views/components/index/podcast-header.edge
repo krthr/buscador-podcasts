@@ -1,0 +1,24 @@
+<div class="flex items-center gap-4 mb-4">
+  <div class="avatar">
+    <div class="w-24 rounded-full">
+      <a href="{{ podcast.url }}">
+        <img
+          class="lazy w-24 aspect-square"
+          src="{{ podcast.images.preview }}"
+          data-src="{{ podcast.images.url }}"
+        />
+      </a>
+    </div>
+  </div>
+
+  <div>
+    <h2 class="font-bold text-2xl">
+      <a href="{{ podcast.url }}">
+        {{ podcast.title }}
+      </a>
+    </h2>
+    <p class="line-clamp-2">
+      {{ excerpt(podcast.description, 200, { completeWords: true }) }}
+    </p>
+  </div>
+</div>

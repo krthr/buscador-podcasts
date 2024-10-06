@@ -27,11 +27,10 @@ export default class PodcastProcessRss extends BaseCommand {
     podcast.imageUrl = parsed.image
     podcast.description = parsed.description
 
-    logger.info('saving podcast')
     await podcast.save()
 
     for (const item of parsed.items) {
-      logger.info({ title: item.title, guid: item.guid }, `saving episode`)
+      // logger.info({ title: item.title, guid: item.guid }, `saving episode`)
       await podcast.related('episodes').updateOrCreate(
         {
           guid: item.guid,
@@ -49,10 +48,9 @@ export default class PodcastProcessRss extends BaseCommand {
   }
 
   async run() {
-    logger.info({ id: this.id }, 'using arguments')
+    logger.info({ id: this.id }, 'podcast process rss using arguments')
 
     let query = Podcast.query()
-
     if (this.id) {
       query = query.where('id', this.id).orWhere('slug', this.id)
     }

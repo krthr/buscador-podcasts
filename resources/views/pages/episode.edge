@@ -1,0 +1,54 @@
+@layouts.app()
+
+  <article class="prose mx-auto" id="content">
+
+    <div class="text-center gap-2">
+      <img class="mx-auto rounded-xl" src="{{ episode.images.url }}" alt="" />
+
+      <div class="w-full">
+        <h1 class="mb-4 font-bold">
+
+          {{ episode.title }}
+        </h1>
+
+        <div class="flex items-center mx-auto justify-center gap-x-2">
+          <div class="avatar">
+            <div class="w-12 rounded-full ">
+              <img class="my-0" src="{{ episode.podcast.images.url }}" />
+            </div>
+          </div>
+
+          <h2 class="my-0">
+            <a href="{{ episode.podcast.url }}">
+              {{ episode.podcast.title }}
+            </a>
+          </h2>
+        </div>
+
+      </div>
+    </div>
+
+    <div class="mt-12">
+      <audio src="{{ episode.mediaUrl }}" controls class="w-full">
+      </audio>
+    </div>
+
+    {{{ episode.structuredDataMarkdownRendered }}}
+    <div class="divider">
+    </div>
+  </article>
+
+  <div class="text-center">
+    <a class="btn" target="_blank" href="{{ route('episode.markdown', [episode.slug]) }}">
+      Ver artículo en Markdown
+      <iconify-icon class="block" icon="ph:markdown-logo" height="20">
+      </iconify-icon>
+    </a>
+
+    <a class="btn" target="_blank" href="{{ route('episode.transcription', [episode.slug]) }}">
+      Ver transcripción
+      <iconify-icon class="block" icon="ph:article" height="20">
+      </iconify-icon>
+    </a>
+  </div>
+@end

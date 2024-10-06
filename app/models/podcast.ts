@@ -7,6 +7,7 @@ import stringHelpers from '@adonisjs/core/helpers/string'
 
 import Episode from '#models/episode'
 import { buildImageUrl } from '#utils/imagekit'
+import router from '@adonisjs/core/services/router'
 
 const cuid = initCuid({ length: 5 })
 
@@ -66,5 +67,13 @@ export default class Podcast extends BaseModel {
     }
 
     return { url, preview }
+  }
+
+  @computed()
+  get url() {
+    return router
+      .builder()
+      .params({ id: this.slug || this.id })
+      .make('podcast')
   }
 }

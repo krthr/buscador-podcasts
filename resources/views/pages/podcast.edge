@@ -1,0 +1,17 @@
+@layouts.app()
+  <div class="prose max-w-none">
+    <img class="lazy rounded-xl max-w-[200px]" src="{{ podcast.images.preview }}" data-src="{{ podcast.images.url }}" />
+
+    <h2 class="mt-0">
+      {{ podcast.title }}
+    </h2>
+
+    <p>
+      {{ excerpt(podcast.description, 2000) }}
+    </p>
+  </div>
+
+  <div class="divider"></div>
+
+  @!podcast.grid({episodes, podcast})
+@end
