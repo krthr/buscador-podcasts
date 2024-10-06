@@ -92,7 +92,7 @@ export default class EpisodeTranscribeAll extends BaseCommand {
 
     logger.info(`found ${episodes.length} episodes`)
 
-    while (true) {
+    while (episodes.length) {
       const chunk = episodes.splice(0, this.concurrency)
 
       if (chunk.length === 0) {

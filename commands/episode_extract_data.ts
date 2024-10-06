@@ -89,7 +89,10 @@ export default class EpisodeExtractData extends BaseCommand {
     logger.info(`found ${episodes.length} episodes`)
 
     for (const episode of episodes) {
-      logger.info({ id: episode.id, guid: episode.guid, title: episode.title }, 'extracting data')
+      logger.info(
+        { id: episode.id, guid: episode.guid, title: episode.title },
+        'extracting data using arguments'
+      )
 
       const messages: ChatCompletionMessageParam[] = [
         {
