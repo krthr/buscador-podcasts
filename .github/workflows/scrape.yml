@@ -24,3 +24,5 @@ jobs:
       - run: npm install
 
       - run: node ace
+
+      - run: node ace podcast:all --limit 1
