@@ -16,6 +16,10 @@ const PODCASTS = [
     title: 'El Reporte Coronell',
     atomLink: 'https://www.spreaker.com/show/5323098/episodes/feed',
   },
+  {
+    title: 'DianaUribe.fm',
+    atomLink: 'https://dianauribefm.libsyn.com/rss',
+  },
 ]
 
 export default class extends BaseSeeder {

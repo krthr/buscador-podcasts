@@ -2,7 +2,6 @@ import type { BelongsTo } from '@adonisjs/lucid/types/relations'
 
 import { DateTime } from 'luxon'
 import { BaseModel, beforeSave, belongsTo, column, computed, scope } from '@adonisjs/lucid/orm'
-import { init as initCuid } from '@paralleldrive/cuid2'
 import logger from '@adonisjs/core/services/logger'
 import * as marked from 'marked'
 import router from '@adonisjs/core/services/router'
@@ -13,8 +12,7 @@ import { TranscriptionBody } from '#services/replicate_service'
 import { buildImageUrl } from '#utils/imagekit'
 import { srtFormatTimestamp } from '#utils/episodes'
 import { PodcastExtractedData, StructuredData } from '../../commands/episode_extract_data.js'
-
-const cuid = initCuid({ length: 5 })
+import { slugify } from '#utils/slugify'
 
 export default class Episode extends BaseModel {
   @column({ isPrimary: true })
@@ -184,11 +182,8 @@ export default class Episode extends BaseModel {
   ///
 
   @beforeSave()
-  static slugify(episode: Episode) {
-    if (episode.$dirty.title) {
-      const slug = stringHelpers.slug(episode.title, { trim: true, lower: true }) + '-' + cuid()
-      episode.slug = slug
-    }
+  static async slugify(episode: Episode) {
+    await slugify(episode, Episode)
   }
 
   @beforeSave()

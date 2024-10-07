@@ -2,14 +2,11 @@ import type { HasMany } from '@adonisjs/lucid/types/relations'
 
 import { DateTime } from 'luxon'
 import { BaseModel, beforeSave, column, computed, hasMany } from '@adonisjs/lucid/orm'
-import { init as initCuid } from '@paralleldrive/cuid2'
-import stringHelpers from '@adonisjs/core/helpers/string'
 
 import Episode from '#models/episode'
 import { buildImageUrl } from '#utils/imagekit'
 import router from '@adonisjs/core/services/router'
-
-const cuid = initCuid({ length: 5 })
+import { slugify } from '#utils/slugify'
 
 export default class Podcast extends BaseModel {
   @column({ isPrimary: true })
@@ -51,10 +48,7 @@ export default class Podcast extends BaseModel {
 
   @beforeSave()
   static async slugify(podcast: Podcast) {
-    if (podcast.$dirty.title) {
-      const slug = stringHelpers.slug(podcast.title, { trim: true, lower: true }) + '-' + cuid()
-      podcast.slug = slug
-    }
+    await slugify(podcast, Podcast)
   }
 
   ///
