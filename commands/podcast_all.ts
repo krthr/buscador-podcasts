@@ -4,6 +4,7 @@ import ace from '@adonisjs/core/services/ace'
 import logger from '@adonisjs/core/services/logger'
 
 import Podcast from '#models/podcast'
+import Episode from '#models/episode'
 
 export default class PodcastAll extends BaseCommand {
   static commandName = 'podcast:all'
@@ -19,29 +20,36 @@ export default class PodcastAll extends BaseCommand {
   @flags.number({ default: 1 })
   declare limit: number
 
+  async episodeScripts(episode: Episode) {
+    if (!(episode.transcriptionChunks && episode.transcriptionText)) {
+      await ace.exec('episode:transcribe-all', ['--id', episode.id.toString()])
+    }
+
+    if (!episode.structuredData) {
+      await ace.exec('episode:extract-data', ['--id', episode.id.toString()])
+    }
+  }
+
   async processPodcast(podcast: Podcast) {
     logger.info({ id: podcast.id, title: podcast.title }, 'processing')
 
     const episodes = await podcast
       .related('episodes')
       .query()
-      .where((q) => {
-        q.whereNull('transcription_text').orWhereNull('transcription_chunks')
-      })
-      .orWhere((q) => {
-        q.whereNull('structured_data')
-      })
+      .whereNull('transcription_text')
+      .orWhereNull('transcription_chunks')
+      .orWhereNull('structured_data')
+      .orderBy('published_at', 'desc')
       .limit(this.limit)
 
     while (true) {
       const chunks = episodes.splice(0, 3)
 
-      await Promise.allSettled(
-        chunks.map(async (episode) => {
-          await ace.exec('episode:transcribe-all', ['--id', episode.id.toString()])
-          await ace.exec('episode:extract-data', ['--id', episode.id.toString()])
-        })
-      )
+      if (!chunks.length) {
+        break
+      }
+
+      await Promise.allSettled(chunks.map(this.episodeScripts))
     }
   }
 
