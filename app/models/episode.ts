@@ -82,9 +82,7 @@ export default class Episode extends BaseModel {
       }
     },
     prepare(value: StructuredData | null) {
-      console.log({ value })
       const result = PodcastExtractedData.safeParse(value)
-      console.log({ result })
 
       if (result.success) {
         return JSON.stringify(result.data)
