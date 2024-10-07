@@ -1,6 +1,8 @@
 import type { HttpContext } from '@adonisjs/core/http'
 
 import Podcast from '#models/podcast'
+import { parsePage } from '#utils/paginate'
+import router from '@adonisjs/core/services/router'
 
 export default class PodcastsController {
   async index({ view }: HttpContext) {
@@ -17,7 +19,7 @@ export default class PodcastsController {
 
   async show({ params, request, response, view }: HttpContext) {
     const id = params['id']
-    const page = request.input('page')
+    let page = request.input('page')
 
     const podcast = await Podcast.query().where('id', id).orWhere('slug', id).first()
     if (!podcast) {
@@ -30,10 +32,10 @@ export default class PodcastsController {
       .withScopes((s) => s.simple())
       .withScopes((s) => s.public())
       .preload('podcast')
-      .paginate(page)
+      .paginate(parsePage(page))
 
-    // episodes.getNextPageUrl()
-    // episodes.getPreviousPageUrl()
+    episodes.baseUrl(router.builder().params({ id }).make('podcast'))
+
     return view.render('pages/podcast', { podcast, episodes })
   }
 }

@@ -30,16 +30,21 @@
 @if(episodes.hasPages)
   <div class="py-5 w-full flex">
     <div class="join mx-auto">
-      <button
+      <a
         class="join-item btn"
         {{ html.attrs({
-        'disabled': (episodes.currentPage || 1) <= 1
+        'disabled': episodes.currentPage <= 1,
+        'href': episodes.getPreviousPageUrl()
       }) }}
       >«</button>
-      <button class="join-item btn">Página {{ episodes.currentPage || 1 }}</button>
-      <button class="join-item btn" {{ html.attrs({
-          'disabled': !episodes.hasMorePages
-        }) }}>»</button>
+      <a class="join-item btn">Página {{ episodes.currentPage }}</a>
+      <a
+        class="join-item btn"
+        {{ html.attrs({
+          'disabled': !episodes.hasMorePages,
+          'href': episodes.getNextPageUrl()
+        }) }}
+      >»</a>
     </div>
   </div>
 @end
