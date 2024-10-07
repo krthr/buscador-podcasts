@@ -23,6 +23,7 @@ jobs:
 
       - run: npm install
 
-      - run: node ace
-
       - run: node ace podcast:all --limit 1
+        env:
+          OPENAI_API_KEY: ${{ secrets.OPENAI_API_KEY }}
+          REPLICATE_API_TOKEN: ${{ secrets.REPLICATE_API_TOKEN }}
