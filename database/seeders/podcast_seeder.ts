@@ -2,6 +2,7 @@ import { BaseSeeder } from '@adonisjs/lucid/seeders'
 import logger from '@adonisjs/core/services/logger'
 
 import Podcast from '#models/podcast'
+import { slugify } from '#utils/slugify'
 
 const PODCASTS = [
   {
@@ -20,6 +21,10 @@ const PODCASTS = [
     title: 'DianaUribe.fm',
     atomLink: 'https://dianauribefm.libsyn.com/rss',
   },
+  {
+    title: 'Tercera Vuelta',
+    atomLink: 'https://www.spreaker.com/show/5597174/episodes/feed',
+  },
 ]
 
 export default class extends BaseSeeder {
@@ -29,7 +34,8 @@ export default class extends BaseSeeder {
 
       if (!episode) {
         logger.info({ atomLink, title }, 'creating new episode')
-        episode = await Podcast.create({ title, atomLink })
+        const slug = await slugify(Podcast, title)
+        episode = await Podcast.create({ title, atomLink, slug })
       }
     }
   }

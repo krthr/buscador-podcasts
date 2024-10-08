@@ -1,12 +1,11 @@
 import type { HasMany } from '@adonisjs/lucid/types/relations'
 
 import { DateTime } from 'luxon'
-import { BaseModel, beforeSave, column, computed, hasMany } from '@adonisjs/lucid/orm'
+import { BaseModel, column, computed, hasMany } from '@adonisjs/lucid/orm'
 
 import Episode from '#models/episode'
 import { buildImageUrl } from '#utils/imagekit'
 import router from '@adonisjs/core/services/router'
-import { slugify } from '#utils/slugify'
 
 export default class Podcast extends BaseModel {
   @column({ isPrimary: true })
@@ -43,13 +42,6 @@ export default class Podcast extends BaseModel {
 
   @hasMany(() => Episode)
   declare episodes: HasMany<typeof Episode>
-
-  ///
-
-  @beforeSave()
-  static async slugify(podcast: Podcast) {
-    await slugify(podcast, Podcast)
-  }
 
   ///
 

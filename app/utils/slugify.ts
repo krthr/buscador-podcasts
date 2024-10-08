@@ -1,31 +1,21 @@
-import type { LucidModel } from '@adonisjs/lucid/types/model'
+import { LucidModel } from '@adonisjs/lucid/types/model'
 import { init as initCuid } from '@paralleldrive/cuid2'
 import stringHelpers from '@adonisjs/core/helpers/string'
 
-import Episode from '#models/episode'
-import Podcast from '#models/podcast'
-
 const cuid = initCuid({ length: 5 })
 
-export async function slugify(instance: Episode | Podcast, model: LucidModel) {
-  if (instance.slug) {
-    return
+export async function slugify(model: LucidModel, title: string, id?: string | number) {
+  let slug = stringHelpers.slug(title, { trim: true, lower: true })
+
+  let query = model.query().select('id').where('slug', slug)
+  if (id) {
+    query = query.whereNot('id', id)
   }
 
-  let slug = stringHelpers.slug(instance.title, { trim: true, lower: true })
-  console.log({ slug })
-
-  const alreadyExists = await model
-    .query()
-    .where('slug', slug)
-    .whereNot('id', instance.id)
-    .select('id')
-    .first()
-  console.log({ alreadyExists })
-
+  const alreadyExists = await query.first()
   if (alreadyExists) {
     slug += cuid()
   }
 
-  instance.slug = slug
+  return slug
 }

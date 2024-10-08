@@ -4,6 +4,8 @@ import logger from '@adonisjs/core/services/logger'
 
 import AtomParserService from '#services/atom_parser_service'
 import Podcast from '#models/podcast'
+import Episode from '#models/episode'
+import { slugify } from '#utils/slugify'
 
 export default class PodcastProcessRss extends BaseCommand {
   static commandName = 'podcast:process-rss'
@@ -30,20 +32,24 @@ export default class PodcastProcessRss extends BaseCommand {
     await podcast.save()
 
     for (const item of parsed.items) {
-      // logger.info({ title: item.title, guid: item.guid }, `saving episode`)
-      await podcast.related('episodes').updateOrCreate(
-        {
-          guid: item.guid,
-        },
-        {
-          title: item.title,
-          imageUrl: item.image,
-          link: item.link,
-          description: item.description,
-          mediaUrl: item.enclosure.url,
-          publishedAt: item.pubDate,
-        }
-      )
+      const episode = await podcast.related('episodes').query().where('guid', item.guid).first()
+
+      const slug = await slugify(Episode, item.title, episode?.id)
+      const payload = {
+        title: item.title,
+        slug,
+        imageUrl: item.image,
+        link: item.link,
+        description: item.description,
+        mediaUrl: item.enclosure.url,
+        publishedAt: item.pubDate,
+      }
+
+      if (episode) {
+        episode.merge(payload).save()
+      } else {
+        await podcast.related('episodes').create({ ...payload, guid: item.guid })
+      }
     }
   }
 
