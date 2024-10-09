@@ -69,5 +69,7 @@ export default class PodcastAll extends BaseCommand {
       await ace.exec('podcast:process-rss', ['--id', podcast.id.toString()])
       await this.processPodcast(podcast)
     }
+
+    await ace.exec('podcast:index', [])
   }
 }
