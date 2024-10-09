@@ -27,4 +27,7 @@ export default await Env.create(new URL('../', import.meta.url), {
 
   REPLICATE_API_TOKEN: Env.schema.string.optional(),
   OPENAI_API_KEY: Env.schema.string.optional(),
+
+  TYPESENSE_API_KEY: Env.schema.string.optional(),
+  TYPESENSE_URL: Env.schema.string.optional(),
 })

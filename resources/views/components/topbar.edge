@@ -12,10 +12,10 @@
   </div>
 
   <div class="navbar-end">
-    <form class="">
-      <label for="" class="input input-bordered flex items-center gap-2">
-        <input type="text" class="grow" placeholder="Buscar..." />
-        <button>
+    <form action="/search" method="GET">
+      <label class="input input-bordered flex items-center gap-2">
+        <input type="text" class="grow" placeholder="Buscar..." name="q" {{ html.attrs({ value: q }) }} />
+        <button type="submit">
           <iconify-icon class="block" icon="ph:magnifying-glass" height="25">
           </iconify-icon>
         </button>

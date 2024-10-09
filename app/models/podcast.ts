@@ -5,7 +5,7 @@ import { BaseModel, column, computed, hasMany } from '@adonisjs/lucid/orm'
 
 import Episode from '#models/episode'
 import { buildImageUrl } from '#utils/imagekit'
-import router from '@adonisjs/core/services/router'
+import path from 'node:path'
 
 export default class Podcast extends BaseModel {
   @column({ isPrimary: true })
@@ -60,9 +60,6 @@ export default class Podcast extends BaseModel {
 
   @computed()
   get url() {
-    return router
-      .builder()
-      .params({ id: this.slug || this.id })
-      .make('podcast')
+    return path.join('/podcast', this.slug || this.id.toString())
   }
 }

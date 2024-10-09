@@ -1,0 +1,51 @@
+@layouts.app({q})
+
+  <div class="w-full">
+
+    <h1 class="mb-6 font-bold text-xl">
+      {{ totalFound }} resultados para "{{ q }}"
+    </h1>
+
+    <div class="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-2 md:gap-4">
+      @each(hit in hits)
+        <div class="card card-bordered card-compact bg-white">
+
+          <figure>
+            <a href="{{ hit.document.url }}">
+              <img
+                class="lazy aspect-square w-full"
+                src="{{ hit.document.images.preview }}"
+                data-src="{{ hit.document.images.url }}"
+              />
+            </a>
+          </figure>
+
+          <div class="card-body ">
+            <h3 class="card-title line-clamp-2 text-sm md:line-clamp-3 md:text-base">
+              <a href="{{ hit.document.url }}">
+                {{{ hit.highlight.title?.snippet || hit.document.title }}}
+              </a>
+            </h3>
+
+            <p class="line-clamp-3 text-xs md:line-clamp-4 md:text-sm">
+              @if(hit.highlight.transcriptionText)
+                Aparece en: <i>"{{{ hit.highlight.transcriptionText?.snippet }}}"</i>
+              @else
+                {{ hit.document.excerpt }}
+              @end
+            </p>
+          </div>
+        </div>
+      @end
+    </div>
+
+    <div class="py-5 w-full flex">
+      <div class="join mx-auto">
+        <a class="join-item btn" href="{{ prevPage }}" {{ html.attrs({ 'disabled': !prevPage }) }}>«</button>
+        <a class="join-item btn">Página {{ currentPage }} de {{ totalPages }}</a>
+        <a class="join-item btn" href="{{ nextPage }}" {{ html.attrs({   'disabled': !nextPage  }) }}>»</a>
+      </div>
+    </div>
+  </div>
+
+@end

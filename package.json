@@ -30,7 +30,8 @@
     "#database/*": "./database/*.js",
     "#tests/*": "./tests/*.js",
     "#start/*": "./start/*.js",
-    "#config/*": "./config/*.js"
+    "#config/*": "./config/*.js",
+    "#commands/*": "./commands/*.js"
   },
   "devDependencies": {
     "@adonisjs/assembler": "^7.8.1",
@@ -74,6 +75,7 @@
     "openai": "^4.67.1",
     "reflect-metadata": "^0.2.2",
     "replicate": "^0.34.1",
+    "typesense": "^1.8.2",
     "zod": "^3.23.8"
   },
   "hotHook": {

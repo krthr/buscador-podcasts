@@ -4,8 +4,8 @@ import { DateTime } from 'luxon'
 import { BaseModel, beforeSave, belongsTo, column, computed, scope } from '@adonisjs/lucid/orm'
 import logger from '@adonisjs/core/services/logger'
 import * as marked from 'marked'
-import router from '@adonisjs/core/services/router'
 import stringHelpers from '@adonisjs/core/helpers/string'
+import path from 'node:path'
 
 import Podcast from '#models/podcast'
 import { TranscriptionBody } from '#services/replicate_service'
@@ -135,10 +135,7 @@ export default class Episode extends BaseModel {
 
   @computed()
   get url() {
-    return router
-      .builder()
-      .params({ id: this.slug || this.id })
-      .make('episode')
+    return path.join('/', this.slug || this.id.toString())
   }
 
   @computed()
@@ -159,7 +156,11 @@ export default class Episode extends BaseModel {
       }
 
       markdwn.push('## Conclusión', this.structuredData.conclusion)
-      markdwn.push('## Menciones', ...this.structuredData.menciones.map((m) => `- ${m}`))
+      markdwn.push('## Menciones')
+
+      for (const mencion of this.structuredData.menciones) {
+        markdwn.push(`- [${mencion}](/search?q=${encodeURIComponent(mencion)})`)
+      }
 
       return markdwn.join('\n')
     }
@@ -210,6 +211,7 @@ export default class Episode extends BaseModel {
   })
 
   static withId = scope((query, id: string) => {
+    id = decodeURIComponent(id)
     query.where((q) => q.where('id', id).orWhere('guid', id).orWhere('slug', id))
   })
 }
